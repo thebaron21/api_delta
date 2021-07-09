@@ -7,7 +7,7 @@ use FilterableResource;
 
 class UserResource extends JsonResource
 {
-   
+
     /**
      * Transform the resource into an array.
      *
@@ -16,7 +16,13 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        return  $request;
+        return  [
+            'id' => $request->id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'avatar' => $request->avatar,
+        ];
         
     }
 }

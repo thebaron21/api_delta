@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
+
 class UserController extends Controller
 {
     /**
@@ -14,9 +15,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
-        //
+        $json = new UserResource();
+        $user = $req->user();
+
+        return  $json->toArray($user);
     }
 
     /**
@@ -33,14 +37,14 @@ class UserController extends Controller
                 'password'   =>     'required|string',
                 'phone'      =>     'required',
                 'account_id' =>     'required|integer',
-                ]
-            );
+            ]
+        );
         $user = new User();
-        $user->name = $request->get( 'name' );
-        $user->email = $request->get( 'email' );
-        $user->password = Hash::make($request->get( 'password' ));
-        $user->phone = $request->get( 'phone' );
-        $user->account_id = $request->get( 'account_id' );
+        $user->name = $request->get('name');
+        $user->email = $request->get('email');
+        $user->password = Hash::make($request->get('password'));
+        $user->phone = $request->get('phone');
+        $user->account_id = $request->get('account_id');
         $user->save();
 
         return $user;
@@ -60,17 +64,17 @@ class UserController extends Controller
                 'password' => 'required',
             ]
         );
-        $cropt = $req->only( 'email','password' );
+        $cropt = $req->only('email', 'password');
 
-        if( auth()->attempt( $cropt ) ){
-            $user = User::where( 'email', $req->get( 'email' ) )->first();
-            return [ 'api_token' => $user->api_token ];
-            
+        if (auth()->attempt($cropt)) {
+            $user = User::where('email', $req->get('email'))->first();
+            return ['api_token' => $user->api_token];
+
             // return ;
         }
-        return "new UserResource( );";
+        return auth()->attempt($cropt);
     }
-
+    
     /**
      * Display the specified resource.
      *

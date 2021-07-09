@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use Illuminate\Http\Request;
+
+class CategoryController extends Controller
+{
+
+     public function create(Request $req)
+     {   
+        $req->validate([
+            'name' => 'required|max:255'
+         ]);
+         $category = new Category;
+         
+            if( $req->has( 'image' ) ){
+                $category->image = $req->image;
+             }
+             $category->name = $req->name;
+             $category->save();
+             return toJsonModel($category);
+      
+
+     }
+     public function update(Request $req,$id)
+     {
+         $req->validate([
+             'name' => 'required|max:255'
+        ]);
+            
+        $category = Category::find($id);
+         if(  $req->has('image')){
+            $category->image = $req->image;
+         }
+         if($req->has( 'name' )){
+            $category->name = $req->name;
+         }
+
+         $category->save();
+         return toJsonModel($category );
+     }
+     public function show()
+     {
+        $category = Category::all();
+        return toJsonModel($category);
+     }
+     public function index($id)
+     {
+         $category = Category::find($id);
+         return toJsonModel($category);
+     }
+     public function destroy($id)
+     {
+         $category = Category::find($id);
+         if($category->count() >= 0){
+             $category->delete();
+         }
+         return toJsonModel($category);
+     }
+}
