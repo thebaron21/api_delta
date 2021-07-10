@@ -9,17 +9,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    /*
-GET: 		/api/produces		return all Produces with selected Categories or Stories
-GET:		/api/produces/categores_id	return all Produces of Category
-GET:		/api/produces/shop_id	return all Produces of Shop
-GET:		/api/produces/id		return one Product of Selected on Screen
-POST:	/api/create		return once of New Produce
-PUT  : 	/api/produce/id		return Update Produce if Parameters not Empty
-DELETED:	/api/produce/id`		return Boolean if Deleted Produce
-GET:		/api/produce/search/name	return once product TODO handle Search By one Character
-
-*/
     public function index($id)
     {
         $product = Product::find($id);
@@ -70,14 +59,55 @@ GET:		/api/produce/search/name	return once product TODO handle Search By one Cha
     }
     public function update(Request $request, $id)
     {
-    }
-    public function destroy($id)
-    {
         $product = Product::find($id);
-        if ($product >= 1) {
+
+        if($request->has( 'name' )){
+            $product->name = $request->name;
+        }
+        if($request->has( 'price' )){
+            $product->price = intval( $request->price );
+        }
+        if($request->has( 'desc' )){
+            $product->desc = $request->desc;
+        }
+        if($request->has( 'quantity' )){
+            $product->quantity = intval( $request->quantity );
+        }
+        if($request->has( 'size' )){
+            $product->size = $request->size;
+        }
+        if($request->has( 'category_id' )){
+            $product->category_id = intval($request->category_id );
+        }
+
+        $product->save();
+        return toJsonModel( $product );
+    }
+    public function destroy(Request $request)
+    {
+        $product = Product::find($request->id);
+        if ($product->count() >= 1) {
             $product->delete();
             return toJsonModel(["status" => "ok"]);
         }
         return toJsonModel(["status" => "no"]);
+    }
+    public function showShop(Request $request)
+    {
+        $products = Product::where( ["shop_id" => $request->id] )->get();
+        return toJsonModel( $products );
+    }
+    public function showCate(Request $request)
+    {   
+        $products = Product::where( ["category_id" => $request->id] )->get();
+        return toJsonModel( $products );
+    }
+
+    public function search(Request $request)
+    {
+        $product = Product::query()
+                   ->where( 'name' , 'LIKE' , '%'. $request->q . '%' )
+                   ->first();
+        return toJsonModel( $product );
     }
 }

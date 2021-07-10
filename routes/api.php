@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api;
+use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,26 +29,27 @@ Route::middleware('auth:api')->group( function(){
     Route::get('/cate/category/{id}', [ Api\CategoryController::class , 'index']);
     Route::put('/cate/update/{id}', [ Api\CategoryController::class , 'update']);
     Route::delete('/cate/delete/{id}', [ Api\CategoryController::class , 'destroy']);
+    Route::get('/cate/select', [ Api\CategoryController::class , 'select']);
 
     // TODO: [Produces]
 
     Route::post('/pro/create', [ Api\ProductController::class , 'create']);
     Route::get('/pro/categories', [ Api\ProductController::class , 'show']);
+    Route::get('/pro/showShop/{id}', [ Api\ProductController::class , 'showShop']);
+    Route::get('/pro/showCate/{id}', [ Api\ProductController::class , 'showCate']);
     Route::get('/pro/category/{id}', [ Api\ProductController::class , 'index']);
     Route::put('/pro/update/{id}', [ Api\ProductController::class , 'update']);
     Route::delete('/pro/delete/{id}', [ Api\ProductController::class , 'destroy']);
+    Route::get('/pro/search',[ Api\ProductController::class , 'search']);
 
+    //TODO: Order
 
+    Route::post('/order/create', [ OrderController::class , 'create']);
+    Route::delete('/order/delete', [ OrderController::class , 'destroy']);
+    Route::get('/order/show', [ OrderController::class , 'show']);
+    Route::put('/order/update', [ OrderController::class , 'update']);
 });
 
-    /*->errors()
-GET: 		/api/produces		return all Produces with selected Categories or Stories
-GET:		/api/produces/categores_id	return all Produces of Category
-GET:		/api/produces/shop_id	return all Produces of Shop
-GET:		/api/produces/id		return one Product of Selected on Screen
-POST:	/api/create		return once of New Produce
-PUT  : 	/api/produce/id		return Update Produce if Parameters not Empty
-DELETED:	/api/produce/id`		return Boolean if Deleted Produce
-GET:		/api/produce/search/name	return once product TODO handle Search By one Character
-
+/*
+    TODO: GET:		/api/produce/search/name	return once product  handle Search By one Character
 */
