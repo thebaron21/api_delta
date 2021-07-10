@@ -17,12 +17,12 @@ use App\Http\Controllers\OrderController;
 
 Route::post( '/register',  [ Api\UserController::class , 'create'] );
 Route::post( '/login',  [ Api\UserController::class , 'login'] );
-Route::get( '/user',  [ Api\UserController::class , 'index'] );
 Route::post('/forget', [ Api\UserController::class , 'forgot_password']);
 Route::post('/password/reset', [Api\UserController::class ,'reset'])->name('password.reset');
 
-Route::get('/test', [ Api\CategoryController::class , 'test']);
 Route::middleware('auth:api')->group( function(){
+    Route::get( '/user',  [ Api\UserController::class , 'index'] );
+    Route::post('/test', [ Api\CategoryController::class , 'test']);
 
     Route::post('/cate/create', [ Api\CategoryController::class , 'create']);
     Route::get('/cate/categories', [ Api\CategoryController::class , 'show']);

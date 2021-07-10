@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class CategoryController extends Controller
 {
@@ -67,8 +69,15 @@ class CategoryController extends Controller
          return toArrayCategory($category);
      }
 
-     public function test()
+     public function test(Request $request)
      {
-        
+        // $data = $request->user()->sendEmailVerificationNotification();
+        VerifyEmail::toMailUsing(function ($notifiable, $url) {
+            return (new MailMessage)
+                ->subject('Verify Email Address')
+                ->line('Click the button below to verify your email address.')
+                ->action('Verify Email Address', $url);
+        });
+
      }
 }
