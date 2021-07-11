@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +22,10 @@ Route::post('/password/reset', [Api\UserController::class ,'reset'])->name('pass
 
 Route::middleware('auth:api')->group( function(){
     Route::get( '/user',  [ Api\UserController::class , 'index'] );
+    Route::delete( '/user/{id}',  [ Api\UserController::class , 'destroy'] );
+    Route::post( '/user/update/{id}',  [ Api\UserController::class , 'update'] );
+    Route::get( '/users',  [ Api\UserController::class , 'show'] );
+
     Route::post('/test', [ Api\CategoryController::class , 'test']);
 
     Route::post('/cate/create', [ Api\CategoryController::class , 'create']);
@@ -48,6 +52,10 @@ Route::middleware('auth:api')->group( function(){
     Route::delete('/order/delete', [ OrderController::class , 'destroy']);
     Route::get('/order/show', [ OrderController::class , 'show']);
     Route::put('/order/update', [ OrderController::class , 'update']);
+    //--------------------------------------
+    Route::post('/cart/create' , [CartController::class , 'create']);
+    Route::get('/cart/get' , [CartController::class , 'getCart']);
+    Route::delete('/cart/delete/{id}' , [CartController::class , 'destroy']);// 
 });
 
 /*

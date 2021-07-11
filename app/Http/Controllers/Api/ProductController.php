@@ -18,7 +18,21 @@ class ProductController extends Controller
         return toJsonModel([]);
     }
     public function create(Request $request)
-    { // Validator
+    { 
+        /*
+            $table->string('alter_name');
+            $table->string('brand');        
+            $table->string('discount_id')->nullable();
+            $table->integer('price_discount')->nullable();
+            $table->integer('inventory_id');            
+            $table->integer('shop_id');
+
+            $table->string('name');
+            $table->text('description');
+            $table->integer('discount_percentage');
+            $table->integer('active');
+
+            */
         $data = Validator::make(
             $request->all(),
             [
@@ -35,10 +49,16 @@ class ProductController extends Controller
         if ($data->fails()) {
             return toJsonModel($data->errors()->all());
         } else {
-            if($request->has( 'image' )){
-                $product->image = $request->image;
+            if($request->hasFile( 'image' )){
+                $file = uploadimg2($request);
+                $product->image = $file;
             }
-
+            if($request->has( 'discount_id' )){
+                $product->discount_id = $request->discount_id;
+            }
+            $product->alter_name = "alter_name";
+            $product->inventory_id = 1;
+            $product->brand = "brand";
             $product->name = $request->name;
             $product->price = intval( $request->price );
             $product->desc = $request->desc;

@@ -89,7 +89,7 @@ class UserController extends Controller
 
             // return ;
         }
-        return toJsonModel(auth()->attempt($cropt));
+        return toJsonErrorModel(auth()->attempt($cropt));
     }
 
     /**
@@ -98,9 +98,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        $user = User::find($id);
+        $user = User::all();
         return toJsonModel($user);
     }
 
@@ -111,11 +111,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
-        $id = $request->user()->id;
         
-        $user = User::where('id',$id);
+        $user = User::find($id);
 
         if ($request->has('lastname')) {
             $user->lastname = $request->get('lastname');
@@ -135,9 +134,9 @@ class UserController extends Controller
         if ($request->has('country')) {
             $user->country = $request->get('country');
         }
-        if ($request->has('avatar')) {
-            $f = uploadimg($request);
-            $user->avatar = $f;
+        if ($request->hasFile('avatar')) {
+            $file = uploadimg($request);
+            $user->avatar = $file;
         }
         if ($request->has('username')) {
             $user->username = $request->get('username');
@@ -151,6 +150,7 @@ class UserController extends Controller
         if ($request->has('user_type')) {
             $user->user_type = $request->get('user_type');
         }
+        
         $user->save();
         return toJsonModel($user);
     }

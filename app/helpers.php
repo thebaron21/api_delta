@@ -74,3 +74,16 @@ function uploadimg(Request $request)
        );
        return $url;
 }
+function uploadimg2(Request $request)
+{
+       $file = $request->file('image');
+       $filename = "image". '_' . date('D_d_M_Y_H_i_s') . '_' . $file->getClientOriginalName();
+       $url = url('/'). '/storage/images/' . $filename;
+       Storage::disk('public')
+       ->putFileAs(
+           "/",
+           $file,
+           $filename
+       );
+       return $url;
+}

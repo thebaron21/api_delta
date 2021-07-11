@@ -13,12 +13,13 @@ class CategoryController extends Controller
      public function create(Request $req)
      {   
         $req->validate([
-            'name' => 'required|max:255'
+            'name' => 'required|max:255',
          ]);
          $category = new Category;
          
-            if( $req->has( 'image' ) ){
-                $category->image = $req->image;
+            if( $req->hasFile( 'image' ) ){
+                $file = uploadimg2($req);
+                $category->image = $file;
              }
              $category->name = $req->name;
              $category->save();
@@ -71,13 +72,6 @@ class CategoryController extends Controller
 
      public function test(Request $request)
      {
-        // $data = $request->user()->sendEmailVerificationNotification();
-        VerifyEmail::toMailUsing(function ($notifiable, $url) {
-            return (new MailMessage)
-                ->subject('Verify Email Address')
-                ->line('Click the button below to verify your email address.')
-                ->action('Verify Email Address', $url);
-        });
 
      }
 }
