@@ -3,8 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\VideoCategoryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReportProblemController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\VideoController;
+use App\Http\Controllers\StudioController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -66,11 +71,25 @@ Route::middleware('auth:api')->group( function(){
     Route::post('/dis/create' , [Api\DiscountController::class , 'store']);
     Route::get('/dis/show' , [Api\DiscountController::class , 'show']);
 
-    //TODO: Add Order and [CWUD]
+    //TODO: Report a Problme
     
+    Route::post('/report/create', [ ReportProblemController::class , 'create']);
+    Route::delete('/report/delete/{id}', [ ReportProblemController::class , 'destroy']);
+    Route::get('/report/show', [ ReportProblemController::class , 'getReport']);
+    Route::put('/report/update/{id}', [ ReportProblemController::class , 'update']);
+
+    // News
+
+    Route::get('/news/show', [ NewsController::class , 'show']);
+
+    // Video And Categories Videos
+    Route::get( '/video/categories' , [VideoCategoryController::class , 'show'] );
+    Route::get( '/videos/categories' , [VideoCategoryController::class , 'showAndVideo'] );
+    Route::get( '/videos/{id}' , [VideoController::class , "show"] );
+
+    // Studio
+
+    Route::get( '/studio' , [StudioController::class , 'show'] );
 
 });
 
-/*
-    TODO: GET:		/api/produce/search/name	return once product  handle Search By one Character
-*/
