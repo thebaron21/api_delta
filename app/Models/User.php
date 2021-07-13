@@ -44,4 +44,13 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function orders()
+    {
+        return $this->hasOne(ShoppingSession::class,"user_id");
+    }
+    public function products()
+    {
+        return $this->hasMany(Product::class,"id" ,"product_id");
+    }
 }

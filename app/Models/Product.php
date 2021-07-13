@@ -10,6 +10,12 @@ class Product extends Model
     use HasFactory;
     protected $table = "products";
 
+
+    public function subProducts()
+    {
+        return $this->hasMany(TypeProduct::class,"product_id");
+    }
+
 }
 
 

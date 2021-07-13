@@ -27,7 +27,7 @@ class ProductFactory extends Factory
             'desc' => $this->faker->text(500),
             'quantity' => $this->faker->randomDigitNot(5) ,
             'category_id' => $this->faker->randomDigitNot(5) ,
-            'shop_id'=> $this->faker->randomDigitNot(5) ,
+            
         ];
     }
 }

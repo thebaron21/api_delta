@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
@@ -31,20 +32,22 @@ Route::middleware('auth:api')->group( function(){
     Route::post('/cate/create', [ Api\CategoryController::class , 'create']);
     Route::get('/cate/categories', [ Api\CategoryController::class , 'show']);
     Route::get('/cate/category/{id}', [ Api\CategoryController::class , 'index']);
-    Route::put('/cate/update/{id}', [ Api\CategoryController::class , 'update']);
+    Route::post('/cate/update/{id}', [ Api\CategoryController::class , 'update']);
     Route::delete('/cate/delete/{id}', [ Api\CategoryController::class , 'destroy']);
     Route::get('/cate/select', [ Api\CategoryController::class , 'select']);
 
     // TODO: [Produces]
 
     Route::post('/pro/create', [ Api\ProductController::class , 'create']);
-    Route::get('/pro/categories', [ Api\ProductController::class , 'show']);
+    Route::get('/pro/products', [ Api\ProductController::class , 'show']);
     Route::get('/pro/showShop/{id}', [ Api\ProductController::class , 'showShop']);
     Route::get('/pro/showCate/{id}', [ Api\ProductController::class , 'showCate']);
     Route::get('/pro/category/{id}', [ Api\ProductController::class , 'index']);
     Route::put('/pro/update/{id}', [ Api\ProductController::class , 'update']);
     Route::delete('/pro/delete/{id}', [ Api\ProductController::class , 'destroy']);
     Route::get('/pro/search',[ Api\ProductController::class , 'search']);
+    // Test Sub Products [getSubProduct]
+    Route::get('/pro/subProducsts',[ Api\ProductController::class , 'getSubProduct']);
 
     //TODO: Order
 
@@ -55,7 +58,17 @@ Route::middleware('auth:api')->group( function(){
     //--------------------------------------
     Route::post('/cart/create' , [CartController::class , 'create']);
     Route::get('/cart/get' , [CartController::class , 'getCart']);
-    Route::delete('/cart/delete/{id}' , [CartController::class , 'destroy']);// 
+    Route::delete('/cart/delete' , [CartController::class , 'destroy']);
+    Route::delete('/cart/deteleItem/{id}',[CartController::class , 'destroyItem']);
+    Route::get('/cart/totalPrice' , [CartController::class , 'totalPrice']);
+
+    //TODO: Discount
+    Route::post('/dis/create' , [Api\DiscountController::class , 'store']);
+    Route::get('/dis/show' , [Api\DiscountController::class , 'show']);
+
+    //TODO: Add Order and [CWUD]
+    
+
 });
 
 /*
