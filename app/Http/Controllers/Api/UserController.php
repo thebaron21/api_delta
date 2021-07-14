@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use App\Models\ForgotPassword;
 
 class UserController extends Controller
 {
@@ -234,11 +233,50 @@ class UserController extends Controller
 
     public function forgot_password(Request $request)
     {
-        
+        $data = Validator::make($request->all(),[
+            "email" => "required|email"
+        ]);
+        if($data->fails()){
+            return new JsonResponse($data->errors()->all(),422);
+        }else{
+            $reset = new ForgotPassword;
+            $user = User::where( "email",$request->email )->first();
+            if($user != null){
+                $reset->user_id = $user->id;
+                $reset->code    = rand(1111,9999);
+                $reset->save();
+                sendOTP($user->email,$user->username,$reset->code);
+                return new JsonResponse($reset,200);
+            }else{
+                return new JsonResponse(["email" => "error"],422);
+            }
+        }
     }
 
     public function reset(Request $req)
     {
-        
+        $data = Validator::make($req->all(),[
+            'email'  => 'required',
+            'password'  => 'required',
+            'otp'       => 'required'
+        ]);
+        if($data->fails()){
+            return new JsonResponse($data->errors()->all(), 422);
+        }else{
+            $user  = User::where( "email",$req->email )->first();
+            if($user != null){
+                $reset = ForgotPassword::where( "user_id",$user->id )->first();
+                if (intval($req->otp) == intval($reset->code)) {
+                    $user->password = Hash::make($req->password);
+                    $user->save();
+                    $reset->delete();
+                    return new JsonResponse(["otp" => "ok"],200);
+                }else{
+                    return new JsonResponse(["otp" => "error"],422);
+                }
+            }else{
+                return new JsonResponse(["email" => "error"],422);
+            }
+        }
     }
 }
