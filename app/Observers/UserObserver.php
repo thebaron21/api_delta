@@ -29,9 +29,9 @@ class UserObserver
      * @param  \App\Models\User  $user
      * @return void
      */
-    public function updated(User $user)
+    public function updateing(User $user)
     {
-        //
+        $user->otp = rand(1111,9999);
     }
 
     /**

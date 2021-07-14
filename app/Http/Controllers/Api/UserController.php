@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use GrahamCampbell\ResultType\Success;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -16,10 +18,10 @@ class UserController extends Controller
     {
         $user = $req->user();
 
-        return  toJsonModel($user);
+        return  new JsonResponse($user,200);
     }
 
- 
+
     public function create(Request $request)
     {
         $data = Validator::make(
@@ -62,8 +64,12 @@ class UserController extends Controller
             $user->phone = $request->get('phone');
             $user->user_type = $request->get('user_type');
             $user->save();
+            $this->sendOtpUser($user);
 
-            return toJsonModel($user);
+            // pcntl_async_signals(true);
+            
+
+            return new JsonResponse($user,200);
         }
     }
 
@@ -101,7 +107,7 @@ class UserController extends Controller
     public function show()
     {
         $user = User::all();
-        return toJsonModel($user);
+        return new JsonResponse($user,200);
     }
 
     /**
@@ -111,9 +117,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        
+
         $user = User::find($id);
 
         if ($request->has('lastname')) {
@@ -150,9 +156,9 @@ class UserController extends Controller
         if ($request->has('user_type')) {
             $user->user_type = $request->get('user_type');
         }
-        
+
         $user->save();
-        return toJsonModel($user);
+        return new JsonResponse($user,200);
     }
 
     /**
@@ -165,6 +171,74 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $user->delete();
-        return toJsonModel($user);
+        return new JsonResponse($user,200);
+    }
+    public function emailVerified(Request $request)
+    {
+        $data = Validator::make(
+            $request->all(),
+            [
+                "otp" => "required|integer"
+            ]
+        );
+        if ($data->fails()) {
+            return toJsonErrorModel($data->errors()->all());
+        } else {
+            $id = $request->user()->id;
+            $user = User::find($id);
+            
+            if( $request->otp == $user->otp ){
+                $user->email_verified =  1;
+                $user->save();
+                return new JsonResponse(
+                    [
+                        "Email" => "Verified"
+                    ],200
+                );
+            }else{
+                return new JsonResponse(
+                    [
+                        "otp" => "not accept"
+                    ],200
+                );
+            }
+        }
+    }
+
+    public function sendOtp(Request $req)
+    {
+        $user = $req->user();
+        $user1 = User::find($user->id);
+        $user1->otp = rand(1111,9999);
+        $user1->save();
+        sendOTP($user1->email,$user1->username,$user1->otp);
+        
+        return new JsonResponse([
+            "OTP" => "SuccessFully",
+            "Email" => $user1->email,
+            "OTP"   => $user1->otp
+        ],200);
+    }
+
+    private function sendOtpUser(User $user)
+    {
+        sendOTP($user->email,$user->username,$user->otp);
+        
+        return new JsonResponse([
+            "OTP" => "SuccessFully",
+            "Email" => $user->email,
+            "OTP"   => $user->otp
+        ],200);
+    }
+    /// Forgot Password
+
+    public function forgot_password(Request $request)
+    {
+        
+    }
+
+    public function reset(Request $req)
+    {
+        
     }
 }

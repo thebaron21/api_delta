@@ -3,6 +3,7 @@
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 function toJsonModel($data)
 {
@@ -87,4 +88,18 @@ function uploadimg2(Request $request)
            $filename
        );
        return $url;
+}
+
+
+function sendOTP($to_email,$to_name,$otp)
+{
+    $data = array("OTP" => $otp);
+
+    Mail::send("test", $data, function($message) use ($to_name, $to_email) {
+    
+        $message->to($to_email, $to_name)->subject("OTP");
+
+        $message->from("ahmedmhmedkhllil@gmail.com","The Baron");
+
+    });    
 }

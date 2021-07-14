@@ -9,6 +9,8 @@ use App\Http\Controllers\ReportProblemController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\StudioController;
+use App\Http\Controllers\HomeController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +27,15 @@ Route::post( '/register',  [ Api\UserController::class , 'create'] );
 Route::post( '/login',  [ Api\UserController::class , 'login'] );
 Route::post('/forget', [ Api\UserController::class , 'forgot_password']);
 Route::post('/password/reset', [Api\UserController::class ,'reset'])->name('password.reset');
+Route::post( '/EmailVerified',  [ Api\UserController::class , 'emailVerified'] )->middleware('auth:api');
 
-Route::middleware('auth:api')->group( function(){
+Route::put('/sendOTP', [Api\UserController::class ,'sendOtp'])->middleware('auth:api');
+
+
+Route::middleware(['verifiedEmail','auth:api'])->group( function(){
+
+    Route::get( '/resend',  [ HomeController::class , 'resend'] );
+    // ----------------------------
     Route::get( '/user',  [ Api\UserController::class , 'index'] );
     Route::delete( '/user/{id}',  [ Api\UserController::class , 'destroy'] );
     Route::post( '/user/update/{id}',  [ Api\UserController::class , 'update'] );
@@ -88,8 +97,27 @@ Route::middleware('auth:api')->group( function(){
     Route::get( '/videos/{id}' , [VideoController::class , "show"] );
 
     // Studio
-
     Route::get( '/studio' , [StudioController::class , 'show'] );
 
+   
+    
 });
 
+
+Route::get('/verifiedEmail', function (Request $request) {
+    return [
+        "verifiedEmail" => "OK"
+    ];
+})->middleware(['verifiedEmail','auth:api']);
+
+// Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+//     $request->fulfill();
+
+//     return redirect('/home');
+// })->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Route::post('/email/verification-notification', function (Request $request) {
+//     $request->user()->sendEmailVerificationNotification();
+
+//     return back()->with('message', 'Verification link sent!');
+// })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
