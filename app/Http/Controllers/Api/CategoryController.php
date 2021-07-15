@@ -59,15 +59,11 @@ class CategoryController extends Controller
         }
         return toJsonModel($category);
     }
-    public function select(Request $req)
+    public function getCategoryAndProduct(Request $req)
     {
         $category = Category::with('products')
             ->where('id', $req->id)
             ->first();
         return toArrayCategory($category);
-    }
-
-    public function test(Request $request)
-    {
     }
 }

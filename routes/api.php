@@ -13,42 +13,41 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Http\Request;
 
 /*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-| [UserProfileController::class, 'show']
+|--------------------------------------------------------------------------|
+| API Routes                                                               | 
+|--------------------------------------------------------------------------|
+|                                                                          | 
+| Here is where you can register API routes for your application. These    | 
+| routes are loaded by the RouteServiceProvider within a group which       | 
+| is assigned the "api" middleware group. Enjoy building your API!         |
+| -------------------------------------------------------------------------|
 */
 
 Route::post( '/register',  [ Api\UserController::class , 'create'] );
-Route::post( '/login',  [ Api\UserController::class , 'login'] );
-Route::post('/forget', [ Api\UserController::class , 'forgot_password']);
+Route::post( '/login',       [ Api\UserController::class , 'login'] )->middleware("verifiedEmail");
+Route::post('/forgot',         [ Api\UserController::class , 'forgot_password'])->middleware("verifiedEmail");
 Route::post('/password/reset', [Api\UserController::class ,'reset'])->name('password.reset');
 Route::post( '/EmailVerified',  [ Api\UserController::class , 'emailVerified'] )->middleware('auth:api');
-
-Route::put('/sendOTP', [Api\UserController::class ,'sendOtp'])->middleware('auth:api');
+Route::post('/sendOTP', [Api\UserController::class ,'sendOtp'])->middleware('auth:api');
 
 
 Route::middleware(['verifiedEmail','auth:api'])->group( function(){
 
-    Route::get( '/resend',  [ HomeController::class , 'resend'] );
+
     // ----------------------------
     Route::get( '/user',  [ Api\UserController::class , 'index'] );
     Route::delete( '/user/{id}',  [ Api\UserController::class , 'destroy'] );
     Route::post( '/user/update/{id}',  [ Api\UserController::class , 'update'] );
     Route::get( '/users',  [ Api\UserController::class , 'show'] );
 
-    Route::post('/test', [ Api\CategoryController::class , 'test']);
+    
 
     Route::post('/cate/create', [ Api\CategoryController::class , 'create']);
     Route::get('/cate/categories', [ Api\CategoryController::class , 'show']);
     Route::get('/cate/category/{id}', [ Api\CategoryController::class , 'index']);
     Route::post('/cate/update/{id}', [ Api\CategoryController::class , 'update']);
     Route::delete('/cate/delete/{id}', [ Api\CategoryController::class , 'destroy']);
-    Route::get('/cate/select', [ Api\CategoryController::class , 'select']);
+    Route::get('/cate/select', [ Api\CategoryController::class , 'getCategoryAndProduct']);
 
     // TODO: [Produces]
 
@@ -60,8 +59,7 @@ Route::middleware(['verifiedEmail','auth:api'])->group( function(){
     Route::put('/pro/update/{id}', [ Api\ProductController::class , 'update']);
     Route::delete('/pro/delete/{id}', [ Api\ProductController::class , 'destroy']);
     Route::get('/pro/search',[ Api\ProductController::class , 'search']);
-    // Test Sub Products [getSubProduct]
-    Route::get('/pro/subProducsts',[ Api\ProductController::class , 'getSubProduct']);
+    Route::get('/pro/subProducts',[ Api\ProductController::class , 'getSubProduct']);
 
     //TODO: Order
 
@@ -73,7 +71,7 @@ Route::middleware(['verifiedEmail','auth:api'])->group( function(){
     Route::post('/cart/create' , [CartController::class , 'create']);
     Route::get('/cart/get' , [CartController::class , 'getCart']);
     Route::delete('/cart/delete' , [CartController::class , 'destroy']);
-    Route::delete('/cart/deteleItem/{id}',[CartController::class , 'destroyItem']);
+    Route::delete('/cart/deleteItem/{id}',[CartController::class , 'destroyItem']);
     Route::get('/cart/totalPrice' , [CartController::class , 'totalPrice']);
 
     //TODO: Discount
@@ -93,8 +91,8 @@ Route::middleware(['verifiedEmail','auth:api'])->group( function(){
 
     // Video And Categories Videos
     Route::get( '/video/categories' , [VideoCategoryController::class , 'show'] );
-    Route::get( '/videos/categories' , [VideoCategoryController::class , 'showAndVideo'] );
-    Route::get( '/videos/{id}' , [VideoController::class , "show"] );
+    Route::get( '/videos/videos' , [VideoCategoryController::class , 'showAndVideo'] );
+    
 
     // Studio
     Route::get( '/studio' , [StudioController::class , 'show'] );
@@ -102,22 +100,3 @@ Route::middleware(['verifiedEmail','auth:api'])->group( function(){
    
     
 });
-
-
-Route::get('/verifiedEmail', function (Request $request) {
-    return [
-        "verifiedEmail" => "OK"
-    ];
-})->middleware(['verifiedEmail','auth:api']);
-
-// Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-//     $request->fulfill();
-
-//     return redirect('/home');
-// })->middleware(['auth', 'signed'])->name('verification.verify');
-
-// Route::post('/email/verification-notification', function (Request $request) {
-//     $request->user()->sendEmailVerificationNotification();
-
-//     return back()->with('message', 'Verification link sent!');
-// })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
